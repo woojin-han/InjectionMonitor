@@ -25,9 +25,12 @@
 ## 목업
 `mockups/index.html`을 브라우저로 열면 3가지 디자인 대안을 비교할 수 있습니다. (디자인 미확정)
 
-| A. 클린 커머스 | B. 프라이스 트래커 | C. 팩트체크 |
+| A. 가격 줄자 | B. 세일 스티커 | C. 가격 영수증 |
 |---|---|---|
-| 익숙한 쇼핑몰형 | 데이터 대시보드형 | 판정 중심형 |
+| 같은 눈금 위에서 가격을 잰다 | 내릴 때마다 스티커를 덧붙인다 | 실제로 찍힌 가격만 기록한다 |
+
+1차 목업(클린 커머스, 대시보드, 팩트체크)은 `mockups/v1/`에 있습니다.
+
 
 ## 기술 스택 (계획)
 Next.js + TypeScript + Tailwind · Supabase(PostgreSQL, Auth, Realtime) · Python 수집기 · GitHub Actions · Vercel · OpenAI API
@@ -35,7 +38,7 @@ Next.js + TypeScript + Tailwind · Supabase(PostgreSQL, Auth, Realtime) · Pytho
 ## 폴더
 ```
 docs/       기획·설계 문서
-mockups/    HTML 목업 3종
+mockups/    HTML 목업 3종 (v1/ 은 1차 목업)
 supabase/   schema.sql (DB 스키마, 함수, RLS)
 crawler/    (예정) Python 수집기
 web/        (예정) Next.js 웹

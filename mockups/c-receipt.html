@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>세일체크 C안 · 가격 영수증</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>
+/* 콘셉트: 계산대 영수증. 영수증은 "실제로 결제된 가격"의 증거다. 정가는 영수증에 찍힌 적이 있는지로 판정한다.
+   레이아웃: 계산대 트레이(차분한 청회색) 위에 감열지 영수증이 놓인 모양. 형광펜 줄 하나가 판정을 표시한다.
+   감열지 줄 글씨에만 고정폭 글꼴을 쓴다(영수증의 실제 인쇄 방식). */
+:root{
+  --tray:#4a6274; --tray-2:#3f5566; --paper:#fbfbf8; --ink:#2b2f36; --ink-2:#6b7280; --faint:#c7ccd3;
+  --hl-real:#b8f27c; --hl-fake:#ff9ec4; --hl-low:#ffe76a; --stamp:#d6336c; --ok:#2b8a3e;
+  --c-line:#2b2f36; --c-list:#d6336c; --c-low:#b08900; --c-grid:#eceef0; --c-text:#9aa1ab; --c-bg:#fbfbf8;
+  --thermal:'Nanum Gothic Coding',monospace; --big:'Black Han Sans','Nanum Gothic',sans-serif; --body:'Nanum Gothic',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--tray);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:2px solid var(--hl-low);outline-offset:2px}
+.mock{background:var(--tray-2);color:#fff;font-size:12px;padding:6px 16px;display:flex;gap:14px;overflow-x:auto;white-space:nowrap}.mock a{opacity:.72}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{position:sticky;top:0;z-index:10;background:var(--tray);border-bottom:1px solid var(--tray-2)}
+.hd{display:flex;align-items:center;gap:16px;height:64px;color:#fff}
+.logo{font-family:var(--big);font-size:24px;letter-spacing:.02em}
+.logo small{font-family:var(--thermal);font-size:11px;opacity:.7;margin-left:8px;letter-spacing:0}
+.search{flex:1;max-width:420px;background:var(--tray-2);border-radius:6px;padding:9px 12px;color:#c9d3db;font-size:13px}
+.tools{margin-left:auto;display:flex;gap:8px;align-items:center;position:relative}
+.ib{background:none;border:0;color:#fff;width:40px;height:40px;position:relative;font-size:18px;border-radius:6px}.ib:hover{background:var(--tray-2)}
+.cnt{position:absolute;top:3px;right:2px;background:var(--hl-fake);color:var(--ink);font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:9px;line-height:17px}
+.btn{background:var(--ink);color:#fff;border:0;border-radius:6px;padding:10px 16px;font-weight:800;font-size:13px}.btn.paper{background:var(--paper);color:var(--ink)}.btn.ghost{background:transparent;color:#fff;box-shadow:inset 0 0 0 1px #c9d3db}
+
+/* 영수증 종이 */
+.rc{background:var(--paper);position:relative;padding:20px 18px 26px;font-family:var(--thermal);font-size:13px;color:var(--ink);
+  -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 8px repeat-x;
+  mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/14px 8px repeat-x;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.18))}
+.rc .hdr{text-align:center;border-bottom:1px dashed var(--faint);padding-bottom:10px;margin-bottom:10px}
+.rc .hdr b{font-family:var(--body);font-weight:800;font-size:14px;display:block}
+.rc .hdr span{font-size:11px;color:var(--ink-2)}
+.ln{display:flex;justify-content:space-between;gap:10px}
+.ln span:first-child{color:var(--ink-2)}
+.ln.str span:last-child{text-decoration:line-through;color:var(--ink-2)}
+.ln.tot{font-size:15px;font-weight:700;border-top:1px dashed var(--faint);padding-top:8px;margin-top:6px}
+.ln.tot span:last-child{font-family:var(--big);font-weight:400;font-size:24px;line-height:1}
+.hl{margin:8px -6px 0;padding:4px 6px;border-radius:2px;font-weight:700}
+.hl-real{background:linear-gradient(100deg,transparent 0 1%,var(--hl-real) 2% 97%,transparent 99%)}
+.hl-inflated{background:linear-gradient(100deg,transparent 0 1%,var(--hl-fake) 2% 97%,transparent 99%)}
+.hl-normal{background:linear-gradient(100deg,transparent 0 1%,#e5e7eb 2% 97%,transparent 99%)}
+.hl-insufficient{background:repeating-linear-gradient(90deg,#e5e7eb 0 6px,transparent 6px 10px)}
+.barcode{height:34px;margin-top:14px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 3px,var(--ink) 3px 4px,transparent 4px 7px,var(--ink) 7px 10px,transparent 10px 11px)}
+.code{text-align:center;font-size:11px;color:var(--ink-2);margin-top:4px;letter-spacing:.2em}
+.stampmark{position:absolute;right:14px;top:58px;border:2.5px solid var(--stamp);color:var(--stamp);font-family:var(--big);font-size:16px;padding:3px 8px;border-radius:4px;transform:rotate(-12deg);opacity:.85;background:rgba(251,251,248,.7)}
+.stampmark.ok{border-color:var(--ok);color:var(--ok)}
+
+/* 홈 */
+.intro{color:#fff;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:30px;align-items:center;padding:30px 0 18px}
+.intro h1{font-family:var(--big);font-weight:400;font-size:36px;line-height:1.25;margin:0;text-wrap:balance}
+.intro p{color:#d5dde3;max-width:54ch;margin:10px 0 0}
+.today .ln{font-size:12px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;padding:8px 0 18px}
+.f{background:var(--tray-2);color:#d5dde3;border:0;border-radius:6px;padding:7px 12px;font-size:13px}.f.on{background:var(--paper);color:var(--ink);font-weight:800}
+.grid{columns:4 250px;column-gap:20px;padding-bottom:40px}
+.slip{break-inside:avoid;margin-bottom:22px;display:block;cursor:pointer;transition:transform .15s}
+.slip:hover{transform:translateY(-2px)}
+@media (prefers-reduced-motion:reduce){.slip{transition:none}}
+.slip .pic{height:96px;border-radius:4px;display:grid;place-items:center;font-size:48px;margin-bottom:10px}
+.slip .nm{font-family:var(--body);font-weight:800;font-size:13px;margin-bottom:8px;line-height:1.4}
+.slip .nm small{display:block;font-weight:400;color:var(--ink-2);font-size:12px}
+.slip .wish{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;border:0;background:var(--paper);box-shadow:0 1px 3px rgba(0,0,0,.2);font-size:14px;z-index:2}
+
+/* 상세 */
+.back{display:inline-block;color:#d5dde3;font-size:13px;margin:18px 0 0}
+.dgrid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:28px;align-items:start;padding:18px 0 50px}
+.longrc{font-size:13px}
+.longrc .pic{height:150px;border-radius:4px;display:grid;place-items:center;font-size:80px;margin-bottom:12px}
+.longrc h1{font-family:var(--body);font-size:17px;margin:0 0 2px;line-height:1.4}
+.days{border-top:1px dashed var(--faint);border-bottom:1px dashed var(--faint);margin:10px 0;padding:8px 0;display:grid;gap:2px}
+.days .ln span:first-child{color:var(--ink)}
+.days .chg{color:var(--ok)}.days .chg.up{color:var(--stamp)}
+.days .ln.atl{background:var(--hl-low);margin:0 -6px;padding:0 6px}
+.side{display:grid;gap:16px}
+.panel{background:var(--paper);border-radius:6px;padding:22px}
+.panel h2{font-family:var(--big);font-weight:400;font-size:22px;margin:0 0 6px}
+.panel .lead{color:var(--ink-2);margin:0 0 12px;font-size:13px}
+.claim{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:16px;align-items:center}
+.claim small{display:block;color:var(--ink-2);font-size:12px}
+.claim b{font-family:var(--big);font-weight:400;font-size:44px;line-height:1.1}
+.claim .arr{font-size:22px;color:var(--ink-2)}
+.chart{width:100%;height:auto;display:block}
+.acts{display:flex;gap:8px;flex-wrap:wrap}.acts .btn{flex:1}
+.ai{font-size:14px;line-height:1.65;margin:0}
+.ai mark{background:var(--hl-low);padding:0 2px}
+.field{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;padding:8px 2px;font-family:var(--big);font-size:30px;margin:4px 0 10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.chips button{background:#eef0f2;border:0;border-radius:4px;padding:6px 10px;font-size:12px}
+.panel label{display:flex;gap:8px;align-items:center;margin:6px 0;font-size:13px}
+.cmp .ln{font-family:var(--thermal);padding:6px 0;border-bottom:1px dashed var(--faint)}
+
+/* 드롭다운, 로그인, 마이 */
+.drop{position:absolute;right:0;top:50px;width:330px;display:none;z-index:20}.drop.on{display:block}
+.drop .rc{padding:16px 14px 22px}
+.ni{display:block;padding:8px 0;border-bottom:1px dashed var(--faint);font-family:var(--body);font-size:13px}.ni small{display:block;color:var(--ink-2);font-family:var(--thermal);font-size:11px}.ni.new{font-weight:700}
+.auth{max-width:360px;margin:50px auto}
+.auth .rc{padding:26px 22px 34px;font-family:var(--body)}
+.auth h1{font-family:var(--big);font-weight:400;font-size:28px;margin:0;text-align:center}.auth p{text-align:center;color:var(--ink-2);font-size:13px;margin:4px 0 14px}
+.auth input{width:100%;border:1px solid var(--faint);border-radius:4px;padding:12px;font:inherit;margin-top:8px;background:#fff}
+.auth .btn{width:100%;margin-top:10px;padding:12px}.err{color:var(--stamp);font-size:12px;margin-top:4px}
+.me{color:#fff}.me h1{font-family:var(--big);font-weight:400;font-size:32px;margin:22px 0 6px}
+.goalln{margin-top:8px;font-weight:700}
+footer{color:#c9d3db;font-size:12px;padding:0 0 40px}
+@media (max-width:1000px){.dgrid{grid-template-columns:minmax(0,1fr)}.longrc{max-width:420px}.intro{grid-template-columns:1fr}}
+@media (max-width:640px){.search{display:none}.logo small{display:none}.intro h1{font-size:28px}.grid{columns:2 150px;column-gap:12px}.slip .pic{height:72px;font-size:36px}.rc{padding:16px 12px 22px;font-size:12px}.ln.tot span:last-child{font-size:19px}.claim b{font-size:32px}.drop{position:fixed;left:8px;right:8px;width:auto;top:100px}.stampmark{font-size:13px;right:8px}}
+</style>
+</head>
+<body>
+<nav class="mock"><a href="index.html">목업 목록</a><span>C안 가격 영수증</span><a href="#/">홈</a><a href="#/p/1">상세: 부풀림 의심</a><a href="#/p/2">상세: 진짜 할인</a><a href="#/login">로그인</a><a href="#/me">마이</a></nav>
+<header><div class="wrap hd">
+  <a class="logo" href="#/">세일체크<small>No.20261129-21</small></a>
+  <div class="search">상품명, 브랜드, 품번으로 찾기</div>
+  <div class="tools"><button class="ib" id="bell" aria-label="알림 2개">🔔<span class="cnt">2</span></button><div class="drop" id="drop"></div>
+    <a class="ib" href="#/me" aria-label="찜 목록" style="display:grid;place-items:center">♡</a><a class="btn ghost" href="#/login">로그인</a></div>
+</div></header>
+<main id="app" class="wrap"></main>
+<footer class="wrap">비상업 학습 프로젝트입니다. 가격은 2026년 11월 14일부터 하루 두 번 직접 수집한 기록입니다.</footer>
+<script src="shared.js"></script>
+<script>
+const {products,GRADE,NOTIS,won,pct,chart,CAT}=SC;const app=document.getElementById('app');const wished=new Set([2,8]);
+const n=v=>Math.round(v).toLocaleString('ko-KR');const P=id=>products.find(p=>p.id==id);
+const LINE={real:s=>`평소보다 -${n(s.base-s.cur)}원 진짜 할인`,inflated:s=>`실제 할인 0원 (정가 판매 ${s.lpDays}일)`,normal:s=>`평소 가격과 비슷 (${n(s.base)}원)`,insufficient:s=>`측정 ${s.days}일째, 판정 대기`};
+const STAMP={real:['진짜 할인','ok'],inflated:['부풀림 의심',''],normal:null,insufficient:null};
+function slip(p){const s=p.s,stp=STAMP[s.grade];return `<a class="slip" href="#/p/${p.id}"><div class="rc">
+  <button class="wish" aria-label="찜" onclick="event.preventDefault();event.stopPropagation();this.textContent=this.textContent==='♥'?'♡':'♥'">${wished.has(p.id)?'♥':'♡'}</button>
+  <div class="pic" style="background:${p.bg}">${p.emoji}</div>${stp?`<span class="stampmark ${stp[1]}">${stp[0]}</span>`:''}
+  <div class="nm">${p.brand} ${p.name}<small>${p.platform}에서 판매</small></div>
+  <div class="ln str"><span>정가</span><span>${n(p.list)}</span></div>
+  <div class="ln"><span>표시 할인 ${pct(s.disp)}</span><span>-${n(p.list-s.cur)}</span></div>
+  <div class="ln tot"><span>지금 가격</span><span>${n(s.cur)}원</span></div>
+  <div class="ln"><span>역대 최저</span><span>${n(s.atl)} (${s.atlDate})</span></div>
+  <div class="hl hl-${s.grade}">${LINE[s.grade](s)}</div></div></a>`}
+function home(){const c={real:0,inflated:0};products.forEach(p=>c[p.s.grade]=(c[p.s.grade]||0)+1);
+  app.innerHTML=`<section class="intro"><div><h1>영수증에 찍힌 가격만 믿습니다</h1><p>매일 두 번 실제 판매 가격을 찍어 두었습니다. 그 정가로 팔린 기록이 없으면 할인도 없는 것으로 봅니다. 형광펜 줄이 판정입니다.</p></div>
+  <div class="rc today"><div class="hdr"><b>오늘의 계산</b><span>2026-11-29 21:00 수집분</span></div>
+  <div class="ln"><span>측정한 상품</span><span>32,410</span></div><div class="ln"><span>역대 최저가 갱신</span><span>1,204</span></div><div class="ln"><span>24시간 가격 하락</span><span>3,877</span></div>
+  <div class="ln tot"><span>부풀림 의심</span><span>18.2%</span></div></div></section>
+  <div class="filters">${Object.values(CAT).map((x,i)=>`<button class="f ${i?'':'on'}">${x}</button>`).join('')}<button class="f">무신사</button><button class="f">29CM</button><button class="f">브랜드몰</button><button class="f">역대 최저가만</button><button class="f">부풀림 의심 숨기기</button></div>
+  <div class="grid">${[...products].sort((a,b)=>b.s.real-a.s.real).map(slip).join('')}</div>`}
+function detail(id){const p=P(id),s=p.s,stp=STAMP[s.grade];
+  const rows=p.h.map((v,i)=>{const d=i?v-p.h[i-1]:0;return `<div class="ln ${v===s.atl&&i===p.h.lastIndexOf(s.atl)?'atl':''}"><span>${s.dates[i]}</span><span>${d?`<em class="chg ${d>0?'up':''}" style="font-style:normal">${d>0?'▲':'▼'}${n(Math.abs(d))}</em> `:''}${n(v)}</span></div>`}).join('');
+  app.innerHTML=`<a class="back" href="#/">영수증 목록으로</a><div class="dgrid"><div class="rc longrc">
+  <div class="hdr"><b>가격 기록 영수증</b><span>${p.platform} · 측정 ${s.since}부터 ${s.days}일</span></div>${stp?`<span class="stampmark ${stp[1]}" style="top:96px">${stp[0]}</span>`:''}
+  <div class="pic" style="background:${p.bg}">${p.emoji}</div><h1>${p.brand} ${p.name}</h1>
+  <div class="days">${rows}</div>
+  <div class="ln str"><span>쇼핑몰 정가</span><span>${n(p.list)}</span></div>
+  <div class="ln"><span>정가로 팔린 날</span><span>${s.lpDays} / ${s.days}일</span></div>
+  <div class="ln"><span>평소 가격 (30일 중앙값)</span><span>${n(s.base)}</span></div>
+  <div class="ln"><span>역대 최저</span><span>${n(s.atl)}</span></div>
+  <div class="ln tot"><span>지금 가격</span><span>${n(s.cur)}원</span></div>
+  <div class="hl hl-${s.grade}">${LINE[s.grade](s)}</div>
+  <div class="barcode" aria-hidden="true"></div><div class="code">SC-${String(p.id).padStart(6,'0')}</div></div>
+  <div class="side"><section class="panel"><h2>쇼핑몰 주장과 기록 비교</h2><p class="lead">${p.verdict}</p>
+  <div class="claim"><div><small>쇼핑몰이 표시한 할인</small><b style="color:var(--ink-2);text-decoration:line-through;text-decoration-color:var(--stamp)">${pct(s.disp)}</b></div><span class="arr">▶</span>
+  <div><small>기록으로 확인한 할인</small><b style="color:${s.real>=.1?'var(--ok)':'var(--stamp)'}">${pct(Math.max(0,s.real))}</b></div></div>
+  <div class="acts" style="margin-top:16px"><button class="btn" onclick="document.getElementById('watch').scrollIntoView({behavior:'smooth'})">가격 알림 받기</button><button class="btn paper" style="box-shadow:inset 0 0 0 1px var(--faint)">${wished.has(p.id)?'♥ 찜함':'♡ 찜하기'}</button><button class="btn paper" style="box-shadow:inset 0 0 0 1px var(--faint)">${p.platform}에서 보기</button></div></section>
+  <section class="panel"><h2>날짜별 가격</h2>${chart(p,s,{w:700,h:230})}</section>
+  ${p.compare?`<section class="panel cmp"><h2>다른 곳 영수증</h2>${p.compare.map(([a,b],i)=>`<div class="ln"><span>${a}${i?'':' (가장 쌈)'}</span><span>${n(b)}원</span></div>`).join('')}</section>`:''}
+  <section class="panel" id="watch"><p class="ai"><b>AI 한 줄 요약.</b> <mark>${p.ai}</mark></p><h2 style="margin-top:18px">이 가격이 찍히면 알려주세요</h2>
+  <input class="field" id="tgt" value="${n(s.atl)}원" aria-label="목표가"><div class="chips"><button>역대 최저가</button><button>지금보다 10% 아래</button><button>평소 가격의 80%</button></div>
+  <label><input type="checkbox" checked>목표가 이하로 내려가면</label><label><input type="checkbox" checked>역대 최저가를 새로 찍으면</label><button class="btn" style="width:100%;margin-top:8px">알림 저장</button></section></div></div>`;scrollTo(0,0)}
+function login(){app.innerHTML=`<form class="auth" onsubmit="event.preventDefault();location.hash='#/me'"><div class="rc"><h1>로그인</h1><p>찜과 가격 알림은 로그인하면 쓸 수 있어요.</p>
+  <input placeholder="이메일" id="em"><input type="password" placeholder="비밀번호" id="pw"><div class="err">비밀번호가 맞지 않아요. 다시 입력해 주세요</div>
+  <button class="btn">로그인</button><button type="button" class="btn paper" style="box-shadow:inset 0 0 0 1px var(--faint)">이메일로 회원가입</button></div></form>`}
+function me(){const w=[{pid:2,t:100000},{pid:6,t:55000},{pid:1,t:99000},{pid:3,t:125000}];
+  app.innerHTML=`<section class="me"><h1>내 영수증함</h1><div class="filters"><button class="f on">관심 상품 ${w.length}</button><button class="f">찜 ${wished.size}</button><button class="f">알림 2</button></div>
+  <div class="grid">${w.map(x=>{const p=P(x.pid),hit=p.s.cur<=x.t;return slip(p).replace(/<div class="hl[^"]*">[^<]*<\/div><\/div><\/a>$/,`<div class="ln goalln"><span>목표가</span><span>${n(x.t)}</span></div><div class="hl ${hit?'hl-real':'hl-normal'}">${hit?'목표 도달, 알림 보냄':'목표까지 '+n(p.s.cur-x.t)+'원'}</div></div></a>`)}).join('')}</div></section>`}
+drop.innerHTML='<div class="rc"><div class="hdr"><b>알림</b><span>읽지 않음 2건</span></div>'+NOTIS.map(x=>`<a class="ni ${x.unread?'new':''}" href="#/p/${x.pid}">${x.type==='low'?'★ ':''}${x.msg}<small>${x.time}</small></a>`).join('')+'</div>';
+bell.onclick=e=>{e.stopPropagation();drop.classList.toggle('on')};document.addEventListener('click',()=>drop.classList.remove('on'));
+function route(){const h=location.hash;drop.classList.remove('on');h.startsWith('#/p/')?detail(h.slice(4)):h==='#/login'?login():h==='#/me'?me():home()}
+addEventListener('hashchange',route);route();
+</script>
+</body>
+</html>

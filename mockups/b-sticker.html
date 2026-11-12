@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>세일체크 B안 · 세일 스티커</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gothic+A1:wght@400;500;700;800&display=swap">
+<style>
+/* 콘셉트: 매장 행거에 걸린 가격택. 가격이 내릴 때마다 새 스티커를 덧붙이는 매장 관행을 그대로 쓴다.
+   스티커를 몇 장 붙였는지 = 실제 가격 변동 기록. 정가 위에 스티커가 처음부터 붙어 있었다면 그게 부풀림이다.
+   레이아웃: 행거 봉(가로선)에 택이 매달린 그리드. 스티커만 형광색, 나머지는 콘크리트 회색과 흰 택. */
+:root{
+  --wall:#d8dce1; --wall-2:#c9ced5; --tag:#ffffff; --ink:#22262d; --ink-2:#626a76; --string:#9aa3ae; --rail:#7d8794;
+  --st-sale:#ff6a1a; --st-low:#ffe047; --st-old:#f1f3f5; --st-real:#2fbf71; --st-fake:#e0307a;
+  --c-line:#22262d; --c-list:#e0307a; --c-low:#c99a00; --c-grid:#eceef1; --c-text:#8b929c; --c-bg:#fff;
+  --marker:'Do Hyeon','Gothic A1',sans-serif; --body:'Gothic A1',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--wall);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.mock{background:var(--ink);color:#fff;font-size:12px;padding:6px 16px;display:flex;gap:14px;overflow-x:auto;white-space:nowrap}.mock a{opacity:.72}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--tag);border-bottom:1px solid var(--wall-2);position:sticky;top:0;z-index:10}
+.hd{display:flex;align-items:center;gap:16px;height:62px}
+.logo{font-family:var(--marker);font-size:26px;display:flex;align-items:center;gap:8px}
+.logo b{background:var(--st-sale);color:#fff;font-weight:400;padding:0 8px;border-radius:4px;transform:rotate(-4deg);display:inline-block;font-size:20px}
+.search{flex:1;max-width:420px;background:var(--wall);border-radius:999px;padding:9px 16px;color:var(--ink-2);font-size:13px}
+.tools{margin-left:auto;display:flex;gap:8px;align-items:center;position:relative}
+.ib{background:none;border:0;width:40px;height:40px;position:relative;font-size:18px;border-radius:50%}.ib:hover{background:var(--wall)}
+.cnt{position:absolute;top:2px;right:0;background:var(--st-sale);color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:9px;line-height:17px}
+.btn{background:var(--ink);color:#fff;border:0;border-radius:999px;padding:10px 16px;font-weight:700;font-size:13px}.btn.line{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.btn.orange{background:var(--st-sale)}
+
+/* 홈 */
+.top{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between;padding:26px 0 8px}
+.top h1{font-family:var(--marker);font-weight:400;font-size:34px;line-height:1.2;margin:0;text-wrap:balance}
+.top p{margin:6px 0 0;color:var(--ink-2);max-width:52ch}
+.keys{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
+.keys span{display:inline-flex;align-items:center;gap:6px}
+.keys i{width:18px;height:12px;border-radius:2px;display:inline-block}
+.filters{display:flex;gap:6px;flex-wrap:wrap;padding:12px 0 6px}
+.f{border:0;background:var(--tag);border-radius:999px;padding:7px 13px;font-size:13px;color:var(--ink-2)}.f.on{background:var(--ink);color:#fff}
+.rack{position:relative;padding-top:34px;margin-top:10px}
+.rack::before{content:"";position:absolute;left:-8px;right:-8px;top:12px;height:8px;border-radius:4px;background:linear-gradient(var(--rail),#5f6875)}
+.tags{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px 20px;padding-bottom:30px}
+.hang{position:relative;padding-top:26px;cursor:pointer}
+.hang::before{content:"";position:absolute;left:50%;top:-22px;width:1.5px;height:50px;background:var(--string);transform:rotate(var(--sw,0deg));transform-origin:top}
+.tag{background:var(--tag);border-radius:10px 10px 6px 6px;padding:22px 16px 16px;position:relative;box-shadow:0 1px 0 var(--wall-2),0 8px 18px rgba(34,38,45,.08);transform:rotate(var(--rot,0deg));transition:transform .2s}
+.hang:hover .tag{transform:rotate(0deg) translateY(-2px)}
+@media (prefers-reduced-motion:reduce){.tag{transition:none}}
+.tag::before{content:"";position:absolute;top:8px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--wall);box-shadow:inset 0 1px 2px rgba(0,0,0,.25)}
+.pic{aspect-ratio:1;max-width:100%;border-radius:6px;display:grid;place-items:center;font-size:56px;margin-top:6px}
+.brand{font-weight:800;font-size:12px;margin-top:10px;letter-spacing:.02em}
+.nm{font-size:13px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.printed{margin-top:10px;font-size:13px;color:var(--ink-2)}.printed s{text-decoration-thickness:1.5px}
+.stack{position:relative;height:66px;margin-top:6px}
+.st{position:absolute;font-family:var(--marker);border-radius:6px;padding:4px 10px 3px;line-height:1.15;box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.st small{display:block;font-family:var(--body);font-size:10px;font-weight:700;opacity:.8}
+.st.old{background:var(--st-old);color:#8b929c;font-size:17px;text-decoration:line-through}
+.st.now{background:var(--st-sale);color:#fff;font-size:26px}
+.st.now.low{background:var(--st-low);color:var(--ink)}
+.dot{position:absolute;right:12px;top:14px;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;text-align:center;font-size:10px;font-weight:800;line-height:1.1;color:#fff;transform:rotate(10deg)}
+.d-real{background:var(--st-real)}.d-inflated{background:var(--st-fake)}.d-normal{background:#8b929c}.d-insufficient{background:#b6bcc4;color:var(--ink)}
+.heart{position:absolute;left:12px;top:14px;background:var(--tag);border:0;width:30px;height:30px;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.18);font-size:14px}
+.facts{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);border-top:1px dashed var(--wall-2);padding-top:8px;margin-top:4px}
+
+/* 상세 */
+.back{display:inline-block;margin:18px 0 0;font-size:13px;color:var(--ink-2)}
+.dgrid{display:grid;grid-template-columns:340px minmax(0,1fr);gap:28px;padding:18px 0 48px;align-items:start}
+.bigtag{position:sticky;top:80px}
+.bigtag .tag{padding:28px 22px 22px;--rot:-1.5deg}
+.bigtag .pic{font-size:110px}
+.bigtag h1{font-size:19px;margin:6px 0 0;line-height:1.35}
+.bigtag .stack{height:96px}.bigtag .st.now{font-size:36px}.bigtag .st.old{font-size:20px}
+.bigtag .dot{width:64px;height:64px;font-size:12px}
+.acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}.acts .btn{flex:1}
+.card{background:var(--tag);border-radius:12px;padding:22px;margin-bottom:16px}
+.card h2{font-family:var(--marker);font-weight:400;font-size:24px;margin:0 0 4px}
+.card .lead{color:var(--ink-2);margin:0 0 16px;font-size:13px}
+.verdict{font-size:17px;line-height:1.6;margin:0}
+.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.nums div{background:var(--wall);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--ink-2)}.nums b{display:block;font-family:var(--marker);font-weight:400;font-size:24px;color:var(--ink)}
+.history{display:flex;gap:14px;overflow-x:auto;padding:8px 2px 12px}
+.hs{flex:none;min-width:116px;border-radius:8px;padding:10px 12px;font-family:var(--marker);position:relative}
+.hs small{display:block;font-family:var(--body);font-size:11px;font-weight:700;opacity:.8}
+.hs b{font-weight:400;font-size:24px}
+.hs.printed-p{background:var(--st-old);color:#8b929c}
+.hs.printed-p.never{outline:2px dashed var(--st-fake);outline-offset:-2px}
+.hs.sale{background:var(--st-sale);color:#fff}.hs.low{background:var(--st-low);color:var(--ink)}.hs.same{background:#ffd9c2;color:var(--ink)}
+.chart{width:100%;height:auto;display:block}
+.ai{background:var(--st-low);border-radius:8px;padding:12px 14px;line-height:1.6;margin-bottom:16px;transform:rotate(-.6deg)}
+.ai b{font-size:12px;display:block}
+.field{width:100%;border:2px solid var(--ink);border-radius:8px;padding:10px 12px;font-family:var(--marker);font-size:26px;margin:6px 0 10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.chips button{border:0;background:var(--wall);border-radius:999px;padding:6px 11px;font-size:12px}
+.card label{display:flex;gap:8px;align-items:center;margin:6px 0;font-size:13px}
+.cmp{display:grid;gap:8px}.cmp div{display:flex;justify-content:space-between;align-items:center;background:var(--wall);border-radius:8px;padding:10px 12px}.cmp b{font-family:var(--marker);font-weight:400;font-size:22px}
+
+/* 드롭다운, 로그인, 마이 */
+.drop{position:absolute;right:0;top:50px;width:340px;background:var(--tag);border-radius:12px;box-shadow:0 14px 34px rgba(34,38,45,.22);display:none;overflow:hidden}.drop.on{display:block}
+.drop h3{margin:0;padding:12px 14px;font-family:var(--marker);font-weight:400;font-size:20px;border-bottom:1px solid var(--wall)}
+.ni{display:grid;grid-template-columns:24px 1fr;gap:8px;padding:12px 14px;border-bottom:1px solid var(--wall);font-size:13px}.ni.new{background:#fff4ec}.ni small{display:block;color:var(--ink-2);font-size:12px}
+.auth{max-width:380px;margin:56px auto;position:relative}
+.auth .tag{padding:34px 24px 24px}
+.auth h1{font-family:var(--marker);font-weight:400;font-size:30px;margin:0}.auth p{color:var(--ink-2);font-size:13px;margin:2px 0 12px}
+.auth input{width:100%;border:1.5px solid var(--wall-2);border-radius:8px;padding:12px;font:inherit;margin-top:8px}
+.auth .btn{width:100%;margin-top:10px;padding:12px}.err{color:var(--st-fake);font-size:12px;margin-top:4px}
+.me h1{font-family:var(--marker);font-weight:400;font-size:32px;margin:22px 0 4px}
+.tabs{display:flex;gap:6px;margin:10px 0 0}.tabs a{background:var(--tag);border-radius:999px;padding:7px 13px;font-size:13px;color:var(--ink-2)}.tabs a.on{background:var(--ink);color:#fff}
+.goal{margin-top:8px;font-size:12px;font-weight:700}
+footer{color:var(--ink-2);font-size:12px;padding:0 0 40px}
+@media (max-width:1024px){.tags{grid-template-columns:repeat(3,minmax(0,1fr))}.dgrid{grid-template-columns:minmax(0,1fr)}.bigtag{position:static;max-width:380px}}
+@media (max-width:640px){.tags{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 12px}.search{display:none}.top h1{font-size:28px}.pic{font-size:40px}.st.now{font-size:21px}.stack{height:60px}.dot{width:38px;height:38px;font-size:9px;right:8px}.tag{padding:22px 10px 12px}.heart{left:8px}.nums{grid-template-columns:1fr}.drop{position:fixed;left:8px;right:8px;width:auto;top:100px}.facts{flex-direction:column}}
+</style>
+</head>
+<body>
+<nav class="mock"><a href="index.html">목업 목록</a><span>B안 세일 스티커</span><a href="#/">홈</a><a href="#/p/1">상세: 부풀림 의심</a><a href="#/p/8">상세: 진짜 할인</a><a href="#/login">로그인</a><a href="#/me">마이</a></nav>
+<header><div class="wrap hd">
+  <a class="logo" href="#/">세일체크 <b>진짜?</b></a>
+  <div class="search">상품명, 브랜드, 품번으로 찾기</div>
+  <div class="tools"><button class="ib" id="bell" aria-label="알림 2개">🔔<span class="cnt">2</span></button><div class="drop" id="drop"></div>
+    <a class="ib" href="#/me" aria-label="찜 목록" style="display:grid;place-items:center">♡</a><a class="btn line" href="#/login">로그인</a></div>
+</div></header>
+<main id="app" class="wrap"></main>
+<footer class="wrap">비상업 학습 프로젝트입니다. 가격은 2026년 11월 14일부터 하루 두 번 직접 수집한 기록입니다.</footer>
+<script src="shared.js"></script>
+<script>
+const {products,GRADE,NOTIS,won,pct,chart,CAT}=SC;const app=document.getElementById('app');const wished=new Set([2,8]);
+const n=v=>Math.round(v).toLocaleString('ko-KR');const P=id=>products.find(p=>p.id==id);
+const DOT={real:'진짜<br>할인',inflated:'부풀림<br>의심',normal:'평소<br>가격',insufficient:'측정<br>중'};
+// 가격 변동 구간 = 붙인 스티커 목록
+function stickers(p){const out=[];p.h.forEach((v,i)=>{if(!out.length||out[out.length-1].price!==v)out.push({price:v,date:p.s.dates[i]})});return out}
+const rot=i=>[-2,1.5,-1,2,-1.5,1,-2.5,1.8][i%8];
+function stack(p){const st=stickers(p),s=p.s,prev=st.length>1?st[st.length-2]:null,cur=st[st.length-1];
+  return `<div class="stack">${prev?`<span class="st old" style="left:4px;top:2px;transform:rotate(-5deg)"><small>${prev.date}</small>${n(prev.price)}</span>`:''}
+  <span class="st now ${s.isAtl&&s.grade!=='inflated'&&s.grade!=='insufficient'?'low':''}" style="left:${prev?'42px':'4px'};top:${prev?'18px':'8px'};transform:rotate(${prev?3:-2}deg)"><small>${cur.date}부터</small>${n(cur.price)}원</span></div>`}
+function tagCard(p,i){const s=p.s,st=stickers(p);return `<div class="hang" style="--rot:${rot(i)}deg;--sw:${rot(i)*-0.6}deg" onclick="location.hash='#/p/${p.id}'"><div class="tag">
+  <button class="heart" aria-label="찜" onclick="event.stopPropagation();this.textContent=this.textContent==='♥'?'♡':'♥'">${wished.has(p.id)?'♥':'♡'}</button>
+  <span class="dot d-${s.grade}">${DOT[s.grade]}</span>
+  <div class="pic" style="background:${p.bg}">${p.emoji}</div><div class="brand">${p.brand}</div><div class="nm">${p.name}</div>
+  <div class="printed">택 가격 <s>${n(p.list)}원</s></div>${stack(p)}
+  <div class="facts"><span>스티커 ${st.length}장, ${s.days}일 기록</span><span>최저 ${n(s.atl)}원</span></div></div></div>`}
+function home(){app.innerHTML=`<section class="top"><div><h1>스티커가 몇 장 붙었는지 보세요</h1><p>가격이 내릴 때마다 스티커를 한 장씩 붙였습니다. 정가로 팔린 적 없이 처음부터 할인 스티커만 붙어 있다면 부풀린 할인입니다.</p></div>
+  <div class="keys"><span><i style="background:var(--st-sale)"></i>지금 가격</span><span><i style="background:var(--st-low)"></i>역대 최저가</span><span><i style="background:var(--st-old);outline:1px solid var(--wall-2)"></i>이전 가격</span></div></section>
+  <div class="filters">${Object.values(CAT).map((c,i)=>`<button class="f ${i?'':'on'}">${c}</button>`).join('')}<button class="f">무신사</button><button class="f">29CM</button><button class="f">브랜드몰</button><button class="f">역대 최저가만</button><button class="f">부풀림 의심 숨기기</button></div>
+  <div class="rack"><div class="tags">${[...products].sort((a,b)=>b.s.real-a.s.real).map(tagCard).join('')}</div></div>`}
+function detail(id){const p=P(id),s=p.s,st=stickers(p),never=s.lpDays===0;
+  app.innerHTML=`<a class="back" href="#/">행거로 돌아가기</a><div class="dgrid"><aside class="bigtag"><div class="tag">
+  <span class="dot d-${s.grade}">${DOT[s.grade]}</span><div class="pic" style="background:${p.bg}">${p.emoji}</div>
+  <div class="brand">${p.brand} · ${p.platform}</div><h1>${p.name}</h1><div class="printed">택 가격 <s>${n(p.list)}원</s></div>${stack(p)}
+  <div class="facts"><span>역대 최저가</span><span><b>${n(s.atl)}원</b> (${s.atlDate})</span></div></div>
+  <div class="acts"><button class="btn orange" onclick="document.getElementById('watch').scrollIntoView({behavior:'smooth'})">가격 알림 받기</button><button class="btn line">${wished.has(p.id)?'♥ 찜함':'♡ 찜하기'}</button></div>
+  <a class="btn line" style="display:block;text-align:center;margin-top:8px">${p.platform}에서 보기</a></aside>
+  <div><section class="card"><h2>판정</h2><p class="verdict">${p.verdict}</p>
+  <div class="nums"><div>택에 적힌 할인<b style="color:var(--st-fake)">${pct(s.disp)}</b></div><div>평소보다 내려간 만큼<b style="color:${s.real>=.1?'var(--st-real)':'var(--ink)'}">${pct(Math.max(0,s.real))}</b></div><div>정가로 팔린 날<b>${s.lpDays} / ${s.days}일</b></div></div></section>
+  <section class="card"><h2>붙인 스티커 순서</h2><p class="lead">왼쪽부터 오래된 순서입니다. 점선 테두리는 한 번도 그 가격에 팔린 적 없는 택 가격입니다.</p>
+  <div class="history"><div class="hs printed-p ${never?'never':''}"><small>택에 인쇄</small><b>${n(p.list)}</b><small>${never?'판매 기록 없음':s.lpDays+'일 판매'}</small></div>
+  ${st.map((x,i)=>`<div class="hs ${i===st.length-1?(s.isAtl&&s.grade!=='inflated'?'low':'sale'):x.price===p.list?'printed-p':'same'}" style="transform:rotate(${rot(i)}deg)"><small>${x.date}부터</small><b>${n(x.price)}</b><small>${x.price===s.atl?'최저가':i===st.length-1?'지금':''}</small></div>`).join('')}</div></section>
+  <section class="card"><h2>날짜별 가격</h2>${chart(p,s,{w:720,h:240})}</section>
+  ${p.compare?`<section class="card"><h2>다른 곳 택</h2><div class="cmp">${p.compare.map(([a,b],i)=>`<div><span>${a}${i?'':' (가장 쌈)'}</span><b>${n(b)}원</b></div>`).join('')}</div></section>`:''}
+  <section class="card" id="watch"><div class="ai"><b>AI 한 줄 요약</b>${p.ai}</div><h2>이 가격 스티커가 붙으면 알려주세요</h2>
+  <input class="field" id="tgt" value="${n(s.atl)}" aria-label="목표가"><div class="chips"><button>역대 최저가</button><button>지금보다 10% 아래</button><button>평소 가격의 80%</button></div>
+  <label><input type="checkbox" checked>목표가 이하로 내려가면</label><label><input type="checkbox" checked>역대 최저가를 새로 찍으면</label><button class="btn" style="width:100%;margin-top:8px">알림 저장</button></section></div></div>`;scrollTo(0,0)}
+function login(){app.innerHTML=`<form class="auth" onsubmit="event.preventDefault();location.hash='#/me'"><div class="tag"><h1>로그인</h1><p>찜과 가격 알림은 로그인하면 쓸 수 있어요.</p>
+  <input placeholder="이메일" id="em"><input type="password" placeholder="비밀번호" id="pw"><div class="err">비밀번호가 맞지 않아요. 다시 입력해 주세요</div>
+  <button class="btn orange">로그인</button><button type="button" class="btn line">이메일로 회원가입</button></div></form>`}
+function me(){const w=[{pid:2,t:100000},{pid:6,t:55000},{pid:1,t:99000},{pid:3,t:125000}];
+  app.innerHTML=`<section class="me"><h1>내 행거</h1><div class="tabs"><a class="on">관심 상품 ${w.length}</a><a>찜 ${wished.size}</a><a>알림 2</a></div>
+  <div class="rack"><div class="tags">${w.map((x,i)=>{const p=P(x.pid),hit=p.s.cur<=x.t;return tagCard(p,i).replace('<div class="facts">',`<div class="goal" style="color:${hit?'var(--st-real)':'var(--ink-2)'}">${hit?'목표 '+n(x.t)+'원 도달, 알림 보냄':'목표 '+n(x.t)+'원까지 '+n(p.s.cur-x.t)+'원'}</div><div class="facts">`)}).join('')}</div></div></section>`}
+drop.innerHTML='<h3>새 스티커 알림</h3>'+NOTIS.map(x=>`<a class="ni ${x.unread?'new':''}" href="#/p/${x.pid}"><span>${x.type==='low'?'★':'◎'}</span><div>${x.msg}<small>${x.time}</small></div></a>`).join('');
+bell.onclick=e=>{e.stopPropagation();drop.classList.toggle('on')};document.addEventListener('click',()=>drop.classList.remove('on'));
+function route(){const h=location.hash;drop.classList.remove('on');h.startsWith('#/p/')?detail(h.slice(4)):h==='#/login'?login():h==='#/me'?me():home()}
+addEventListener('hashchange',route);route();
+</script>
+</body>
+</html>

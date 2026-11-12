@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>세일체크 목업 비교</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  body{margin:0;font-family:Pretendard,system-ui,sans-serif;background:#f4f4f5;color:#111}
+  .wrap{max-width:1100px;margin:0 auto;padding:32px 16px 60px}
+  h1{margin:0 0 6px}p.lead{color:#555;margin:0 0 24px;line-height:1.6}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .c{background:#fff;border:1px solid #e4e4e7;border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+  .sw{height:120px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px}
+  .b{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}.b h2{margin:0;font-size:18px}.b p{margin:0;color:#555;font-size:14px;line-height:1.55}
+  .b ul{margin:0;padding-left:18px;font-size:13px;color:#444;line-height:1.6}
+  .tag{font-size:12px;font-weight:700;display:inline-block;padding:2px 8px;border-radius:4px;background:#f4f4f5}
+  .go{margin-top:auto;display:block;text-align:center;background:#111;color:#fff;padding:11px;border-radius:6px;text-decoration:none;font-weight:700}
+  .rec{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:16px;margin-top:20px;line-height:1.6;font-size:14px}
+  table{width:100%;border-collapse:collapse;background:#fff;margin-top:20px;font-size:13px;border-radius:10px;overflow:hidden}
+  th,td{padding:10px 12px;border-bottom:1px solid #eee;text-align:left}th{background:#fafafa}
+  @media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="wrap">
+<h1>세일체크 목업 3종</h1>
+<p class="lead">세 목업 모두 같은 예시 데이터와 같은 판정 규칙(<code>shared.js</code>, DB 함수와 같은 계산식)을 씁니다. 각 목업 상단의 검은 띠에서 <b>홈 · 상세 · 로그인</b> 화면으로 이동할 수 있습니다. 🔔를 누르면 알림 목록, ♡를 누르면 찜, "알림 받기"를 누르면 관심 상품 등록 화면이 열립니다.</p>
+<div class="grid">
+  <div class="c"><div class="sw" style="background:#fff;border-bottom:1px solid #eee">SALE<span style="color:#e03131">CHECK</span></div><div class="b">
+    <span class="tag">A</span><h2>클린 커머스</h2><p>무신사처럼 익숙한 쇼핑몰 화면. 흰 배경에 큰 이미지 카드를 쓰고, 신뢰도는 작은 배지로 보여줍니다.</p>
+    <ul><li>장점: 익숙하고 구현이 가장 쉽다</li><li>단점: 차별점이 덜 보인다</li></ul><a class="go" href="alt-a-clean.html">A 보기</a></div></div>
+  <div class="c"><div class="sw" style="background:#0b0f17;color:#3ddc97">₩ SaleCheck</div><div class="b">
+    <span class="tag">B</span><h2>대시보드형 (프라이스 트래커)</h2><p>증권 앱 같은 데이터 중심 화면. 어두운 배경에 표, 미니 그래프, 지표 카드를 씁니다.</p>
+    <ul><li>장점: 분석 서비스라는 정체성이 뚜렷하고 난이도가 높아 보인다</li><li>단점: 쇼핑하는 재미가 덜하다</li></ul><a class="go" href="alt-b-tracker.html">B 보기</a></div></div>
+  <div class="c"><div class="sw" style="background:#f6f3ec;font-family:serif;color:#d9480f">세일체크 <span style="border:3px solid;padding:2px 6px;margin-left:8px;transform:rotate(-6deg);font-size:14px">! 부풀림</span></div><div class="b">
+    <span class="tag">C</span><h2>팩트체크</h2><p>판정이 주인공인 화면. "쇼핑몰 주장 60% → 실제 0%"를 크게 보여주고, 신문처럼 근거를 나열합니다.</p>
+    <ul><li>장점: 기획 의도가 가장 잘 드러나고 발표 인상이 강하다</li><li>단점: 정보가 적은 상품은 화면이 허전하다</li></ul><a class="go" href="alt-c-factcheck.html">C 보기</a></div></div>
+</div>
+<table><tr><th>비교</th><th>A 클린 커머스</th><th>B 프라이스 트래커</th><th>C 팩트체크</th></tr>
+<tr><td>차별점(신뢰도) 노출</td><td>△ 배지</td><td>○ 표의 열</td><td>◎ 화면의 중심</td></tr>
+<tr><td>쇼핑 경험</td><td>◎</td><td>△</td><td>○</td></tr>
+<tr><td>구현 난이도</td><td>쉬움</td><td>보통 (표, 미니 그래프)</td><td>보통</td></tr>
+<tr><td>모바일</td><td>2열 카드</td><td>표 → 목록으로 전환</td><td>2열 카드</td></tr>
+<tr><td>발표 인상</td><td>무난</td><td>기술적</td><td>메시지가 강함</td></tr></table>
+<div class="rec"><b>미확정:</b> 세 안을 비교한 뒤 결정합니다. B 목업에는 회원가입, 찜, 관심 상품, 알림 화면까지 들어 있습니다.</div>
+</div></body>
+</html>
