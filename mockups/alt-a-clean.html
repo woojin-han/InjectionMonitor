@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>세일체크 목업 A · 클린 커머스</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--text:#111;--sub:#6b7280;--line:#e5e7eb;--accent:#111;--sale:#e03131;
+    --real:#0f9d58;--normal:#6b7280;--inflated:#e8590c;--insuf:#9ca3af;--low:#7048e8;--down:#1c7ed6;--up:#e03131;
+    --c-line:#111;--c-list:#9ca3af;--c-low:#7048e8;--c-grid:#f0f0f0;--c-text:#9ca3af;--c-bg:#fff}
+  *{box-sizing:border-box}body{margin:0;font-family:Pretendard,system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+  a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}
+  .mock{background:#111;color:#fff;font-size:12px;padding:6px 16px;display:flex;gap:12px;align-items:center;overflow-x:auto;white-space:nowrap}.mock a{opacity:.7}.mock a:hover{opacity:1}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+  header{border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:10}
+  .hd{display:flex;align-items:center;gap:16px;height:60px}
+  .logo{font-weight:900;font-size:20px;letter-spacing:-.5px}.logo b{color:var(--sale)}
+  .search{flex:1;max-width:460px;background:var(--surface);border-radius:4px;padding:10px 14px;color:var(--sub)}
+  .icons{margin-left:auto;display:flex;gap:6px;align-items:center}
+  .ib{position:relative;background:none;border:0;font-size:20px;padding:6px}.badge{position:absolute;top:0;right:0;background:var(--sale);color:#fff;font-size:10px;border-radius:9px;min-width:16px;height:16px;line-height:16px;text-align:center;font-weight:700}
+  .btn{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:4px;padding:9px 16px;font-weight:700}.btn.ghost{background:#fff;color:var(--accent)}
+  .strip{background:var(--surface);font-size:13px;color:var(--sub);padding:10px 0}.strip b{color:var(--text)}
+  .tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-top:20px;overflow-x:auto}
+  .tab{padding:12px 0;font-weight:600;color:var(--sub);border-bottom:2px solid transparent;white-space:nowrap}.tab.on{color:var(--text);border-color:var(--text)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;padding:14px 0;align-items:center}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;background:#fff}.chip.on{background:#111;color:#fff;border-color:#111}
+  .sort{margin-left:auto;color:var(--sub);font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 16px;padding:8px 0 48px}
+  .card{cursor:pointer}.thumb{aspect-ratio:1;border-radius:4px;display:grid;place-items:center;font-size:72px;position:relative}
+  .heart{position:absolute;right:8px;bottom:8px;background:none;border:0;font-size:22px;filter:drop-shadow(0 1px 1px #0003)}
+  .ribbon{position:absolute;left:0;top:10px;background:var(--low);color:#fff;font-size:11px;font-weight:700;padding:3px 8px}
+  .plat{font-size:11px;color:var(--sub);margin-top:10px}.brand{font-weight:700;font-size:13px;margin-top:2px}.name{color:#333;font-size:13px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .price{margin-top:6px;display:flex;gap:6px;align-items:baseline;font-variant-numeric:tabular-nums}.price .pct{color:var(--sale);font-weight:800;font-size:16px}.price .cur{font-weight:800;font-size:16px}
+  .listp{color:var(--sub);text-decoration:line-through;font-size:12px}
+  .low{font-size:12px;color:var(--low);margin-top:3px}
+  .gb{display:inline-flex;gap:4px;align-items:center;font-size:11px;font-weight:700;padding:3px 7px;border-radius:3px;margin-top:6px}
+  .g-real{background:#e6f4ec;color:var(--real)}.g-normal{background:#f1f2f4;color:var(--normal)}.g-inflated{background:#fdeee5;color:var(--inflated)}.g-insufficient{background:#f4f4f5;color:var(--insuf)}
+  /* 상세 */
+  .detail{display:grid;grid-template-columns:1fr 1fr;gap:48px;padding:28px 0 60px}
+  .dimg{aspect-ratio:1;border-radius:4px;display:grid;place-items:center;font-size:160px}
+  .back{color:var(--sub);font-size:13px;display:inline-block;margin-top:18px}
+  h1{font-size:22px;margin:6px 0 2px}.triple{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:4px;margin:20px 0}
+  .triple div{padding:14px}.triple div+div{border-left:1px solid var(--line)}.triple small{display:block;color:var(--sub);font-size:12px}.triple strong{font-size:20px;font-variant-numeric:tabular-nums}
+  .trust{background:var(--surface);border-radius:4px;padding:16px;margin-bottom:16px}.trust p{margin:8px 0 0;line-height:1.55}
+  .nums{display:flex;gap:18px;margin-top:10px;font-size:13px;color:var(--sub)}.nums b{color:var(--text)}
+  .ai{border:1px dashed #c9c9c9;border-radius:4px;padding:12px 14px;font-size:13px;line-height:1.5;margin-bottom:16px}.ai em{font-style:normal;font-weight:700;margin-right:6px}
+  .seg{display:flex;gap:4px;margin:4px 0 8px}.seg span{font-size:12px;padding:4px 10px;border-radius:3px;background:var(--surface);color:var(--sub)}.seg .on{background:#111;color:#fff}
+  .chart{width:100%;height:auto}.cmp{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px}.cmp td{padding:10px 4px;border-top:1px solid var(--line)}.cmp td:last-child{text-align:right;font-weight:700}
+  .actions{display:flex;gap:8px;margin-top:20px}.actions .btn{flex:1;padding:13px}
+  .note{font-size:12px;color:var(--sub);margin-top:6px}
+  /* 드롭다운, 모달 */
+  .drop{position:absolute;right:0;top:44px;width:340px;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 10px 30px #0002;text-align:left;font-size:13px;display:none}.drop.on{display:block}
+  .drop h4{margin:0;padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.drop h4 a{font-weight:400;color:var(--sub);font-size:12px}
+  .ni{padding:12px 14px;display:flex;gap:10px;border-bottom:1px solid var(--line)}.ni.unread{background:#f8f7ff}.ni i{font-style:normal}.ni small{color:var(--sub);display:block;margin-top:3px}
+  .modal{position:fixed;inset:0;background:#0006;display:none;place-items:center;z-index:50;padding:16px}.modal.on{display:grid}
+  .box{background:#fff;border-radius:6px;width:100%;max-width:400px;padding:22px}.box h3{margin:0 0 4px}
+  .field{border:1px solid var(--line);border-radius:4px;padding:12px;font-size:18px;font-weight:700;width:100%;margin-top:14px}
+  .quick{display:flex;gap:6px;margin:10px 0}.box label{display:flex;gap:8px;margin-top:8px;font-size:13px}
+  .login{max-width:380px;margin:60px auto;padding:0 16px}.login input{width:100%;border:1px solid var(--line);border-radius:4px;padding:13px;margin-top:8px;font:inherit}.login .btn{width:100%;margin-top:14px;padding:13px}
+  .err{color:var(--sale);font-size:12px;margin-top:6px}
+  footer{border-top:1px solid var(--line);color:var(--sub);font-size:12px;padding:20px 0 40px}
+  @media (max-width:1024px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media (max-width:640px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px}.thumb{font-size:56px}.search{display:none}.detail{grid-template-columns:1fr;gap:16px}.dimg{font-size:110px}.drop{position:fixed;left:8px;right:8px;width:auto;top:96px}.triple strong{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="mock"><a href="index.html">← 목업 목록</a><span>대안 A · 클린 커머스</span><a href="#/">홈</a><a href="#/p/1">상세(부풀림)</a><a href="#/p/2">상세(진짜)</a><a href="#/login">로그인</a></div>
+<header><div class="wrap hd">
+  <a class="logo" href="#/">SALE<b>CHECK</b></a>
+  <div class="search">🔍 상품명, 브랜드, 품번 검색</div>
+  <div class="icons">
+    <div style="position:relative"><button class="ib" id="bell" aria-label="알림">🔔<span class="badge">2</span></button><div class="drop" id="drop"></div></div>
+    <button class="ib" aria-label="찜">♡</button>
+    <a class="btn ghost" href="#/login" style="padding:7px 12px;font-size:13px">로그인</a>
+  </div>
+</div></header>
+<main id="app"></main>
+<div class="modal" id="modal"><div class="box">
+  <h3>🔔 관심 상품 알림</h3><div class="note" id="mname"></div>
+  <input class="field" id="target" value="">
+  <div class="quick"><span class="chip on">역대 최저가</span><span class="chip">현재가 −10%</span></div>
+  <label><input type="checkbox" checked> 목표가 이하로 내려가면</label>
+  <label><input type="checkbox" checked> 역대 최저가가 갱신되면</label>
+  <div class="actions"><button class="btn ghost" onclick="modal.classList.remove('on')">취소</button><button class="btn" onclick="modal.classList.remove('on')">저장</button></div>
+</div></div>
+<footer><div class="wrap">세일체크는 비상업적 학습 프로젝트입니다 · 가격은 2026-11-14부터 하루 2회 수집 · 상품 정보의 저작권은 각 쇼핑몰에 있습니다</div></footer>
+<script src="shared.js"></script>
+<script>
+const {products,GRADE,NOTIS,won,pct,chart,CAT}=SC; const app=document.getElementById('app');
+const wished=new Set([2,8]);
+const badge=s=>{const g=GRADE[s.grade];return `<span class="gb ${g.cls}">${g.sym} ${g.label}</span>`};
+const card=p=>`<div class="card" onclick="location.hash='#/p/${p.id}'">
+  <div class="thumb" style="background:${p.bg}">${p.emoji}${p.s.isAtl&&p.s.grade!=='insufficient'&&p.s.grade!=='inflated'?'<span class="ribbon">★ 역대 최저가</span>':''}
+  <button class="heart" onclick="event.stopPropagation();toggle(${p.id},this)">${wished.has(p.id)?'❤️':'🤍'}</button></div>
+  <div class="plat">${p.platform}</div><div class="brand">${p.brand}</div><div class="name">${p.name}</div>
+  <div class="price">${p.s.disp>0?`<span class="pct">${pct(p.s.disp)}</span>`:''}<span class="cur">${won(p.s.cur)}</span></div>
+  ${p.s.disp>0?`<div class="listp">${won(p.list)}</div>`:''}
+  <div class="low">역대 최저 ${won(p.s.atl)} · ${p.s.atlDate}</div>${badge(p.s)}</div>`;
+function toggle(id,el){wished.has(id)?wished.delete(id):wished.add(id);el.textContent=wished.has(id)?'❤️':'🤍'}
+function home(){app.innerHTML=`<div class="strip"><div class="wrap">오늘 <b>32,410개</b> 수집 · 역대 최저가 <b>1,204개</b> · 부풀림 의심 <b>18%</b> · 마지막 수집 11/29 21:00</div></div>
+  <div class="wrap"><div class="tabs">${Object.values(CAT).map((c,i)=>`<span class="tab ${i?'':'on'}">${c}</span>`).join('')}</div>
+  <div class="filters"><span class="chip on">무신사</span><span class="chip on">29CM</span><span class="chip on">브랜드몰</span><span class="chip">★ 역대 최저가만</span><span class="chip on">부풀림 의심 제외</span><span class="sort">실질 할인율 순 ▾</span></div>
+  <div class="grid">${products.map(card).join('')}</div></div>`}
+function detail(id){const p=products.find(x=>x.id==id),s=p.s;
+  app.innerHTML=`<div class="wrap"><a class="back" href="#/">← 목록</a><div class="detail">
+  <div><div class="dimg" style="background:${p.bg}">${p.emoji}</div></div>
+  <div><div class="plat">${p.platform}</div><div class="brand" style="font-size:15px">${p.brand}</div><h1>${p.name}</h1>
+  <div class="triple"><div><small>현재 할인가</small><strong>${won(s.cur)}</strong>${s.disp>0?` <span style="color:var(--sale);font-weight:800">${pct(s.disp)}</span>`:''}</div>
+  <div><small>정가</small><strong style="color:var(--sub);text-decoration:line-through;font-weight:600">${won(p.list)}</strong></div>
+  <div><small>역대 최저가 · ${s.atlDate}</small><strong style="color:var(--low)">${won(s.atl)}</strong></div></div>
+  <div class="trust">${badge(s)}<p>${p.verdict}</p><div class="nums"><span>실질 할인 <b>${pct(Math.max(0,s.real))}</b></span><span>정가 판매일 <b>${s.lpDays}/${s.days}일</b></span><span>기준가 <b>${won(s.base)}</b></span></div></div>
+  <div class="ai"><em>AI 한줄</em>${p.ai}</div>
+  <div class="seg"><span>7일</span><span>30일</span><span class="on">전체</span></div>${chart(p,s)}
+  <div class="note">${s.since}부터 ${s.days}일 수집 · 하루 1개 값(그날 최저가)</div>
+  ${p.compare?`<table class="cmp">${p.compare.map(([pl,v],i)=>`<tr><td>${pl}${i?'':' <span class="gb g-real" style="margin:0">최저</span>'}</td><td>${won(v)}</td></tr>`).join('')}</table>`:''}
+  <div class="actions"><button class="btn ghost" onclick="openWatch(${p.id})">🔔 알림 받기</button><button class="btn">${p.platform}에서 보기 ↗</button></div>
+  </div></div></div>`;scrollTo(0,0)}
+function login(){app.innerHTML=`<div class="login"><h1>로그인</h1><div class="note">찜과 가격 알림은 로그인 후 쓸 수 있어요</div>
+  <input placeholder="이메일" value="minsu@"><div class="err">이메일 형식을 확인해 주세요</div><input type="password" placeholder="비밀번호 (영문+숫자 8자 이상)">
+  <button class="btn">로그인</button><button class="btn ghost">이메일로 회원가입</button><p class="note" style="text-align:center">비밀번호를 잊으셨나요?</p></div>`}
+function openWatch(id){const p=products.find(x=>x.id==id);mname.textContent=p.name+' · 현재 '+won(p.s.cur);target.value=won(p.s.atl);modal.classList.add('on')}
+drop.innerHTML=`<h4>알림 <a>모두 읽음</a></h4>`+NOTIS.map(n=>`<a class="ni ${n.unread?'unread':''}" href="#/p/${n.pid}"><i>${n.type==='low'?'★':'🎯'}</i><div>${n.msg}<small>${n.time}</small></div></a>`).join('');
+bell.onclick=e=>{e.stopPropagation();drop.classList.toggle('on')};document.onclick=()=>drop.classList.remove('on');
+function route(){const h=location.hash;drop.classList.remove('on');if(h.startsWith('#/p/'))detail(h.slice(4));else if(h==='#/login')login();else home()}
+addEventListener('hashchange',route);route();
+</script>
+</body>
+</html>
