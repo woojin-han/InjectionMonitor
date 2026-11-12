@@ -23,13 +23,11 @@
 | [09 AI 활용 계획](docs/09_AI활용계획.md) | OpenAI 활용 (평가 항목) |
 
 ## 목업
-**최종 디자인: B 대시보드형** → `mockups/alt-b-tracker.html` (전체 화면 포함)
-
-`mockups/index.html`에서 검토한 대안 3종을 비교할 수 있습니다.
+`mockups/index.html`을 브라우저로 열면 3가지 디자인 대안을 비교할 수 있습니다. (디자인 미확정)
 
 | A. 클린 커머스 | B. 프라이스 트래커 | C. 팩트체크 |
 |---|---|---|
-| 익숙한 쇼핑몰형 | 데이터 대시보드형 ✓ | 판정 중심형 |
+| 익숙한 쇼핑몰형 | 데이터 대시보드형 | 판정 중심형 |
 
 ## 기술 스택 (계획)
 Next.js + TypeScript + Tailwind · Supabase(PostgreSQL, Auth, Realtime) · Python 수집기 · GitHub Actions · Vercel · OpenAI API
