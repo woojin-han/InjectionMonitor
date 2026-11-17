@@ -1,4 +1,4 @@
-/* 세일체크 목업 공통 데이터와 계산 (실제 서비스의 DB 계산식과 같은 규칙) */
+/* 택체크 목업 공통 데이터와 계산 (실제 서비스의 DB 계산식과 같은 규칙) */
 (function () {
   const START = new Date('2026-11-14');
   const day = (i) => { const d = new Date(START); d.setDate(d.getDate() + i); return d; };
@@ -109,7 +109,7 @@
   window.SC = { products, GRADE, NOTIS, won, pct, chart, CAT: { all: '전체', shoes: '신발', top: '상의', bottom: '하의', outer: '아우터' } };
 })();
 
-/* 목업 화면 이동 메뉴: 모바일은 위쪽 줄 그대로, PC(641px 이상)는 헤더 왼쪽 목록 버튼(☰) 안으로 */
+/* 목업 화면 이동 메뉴: PC와 모바일 모두 헤더 왼쪽 목록 버튼(☰) 안으로 */
 (function () {
   const bar = document.querySelector('.mock'); const hd = document.querySelector('header .hd');
   if (!bar || !hd) return;
@@ -125,8 +125,8 @@
   .mnav-menu a{display:block;padding:8px 10px;border-radius:6px;font-size:13px;color:#22262d}
   .mnav-menu a:hover,.mnav-menu a:focus-visible{background:#eef0f3;outline:none}
   .mnav-menu a.cur{font-weight:700;background:#eef0f3}
-  @media (min-width:641px){.mock{display:none!important}}
-  @media (max-width:640px){.mnav{display:none}}`;
+  .mock{display:none!important}
+  @media (max-width:640px){.mnav-btn{width:36px;height:36px}.mnav-menu{position:fixed;left:8px;right:8px;top:58px;min-width:0}}`;
   document.head.appendChild(css);
   const label = (bar.querySelector('span') || {}).textContent || '목업';
   const links = [...bar.querySelectorAll('a')];

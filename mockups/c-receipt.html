@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>세일체크 C안 · 가격 영수증</title>
+<title>택체크 C안 · 가격 영수증</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
 <style>
 /* 콘셉트: 계산대 영수증. 영수증은 "실제로 결제된 가격"의 증거다. 정가는 영수증에 찍힌 적이 있는지로 판정한다.
@@ -111,12 +111,13 @@ header{position:sticky;top:0;z-index:10;background:var(--tray);border-bottom:1px
 footer{color:#c9d3db;font-size:12px;padding:0 0 40px}
 @media (max-width:1000px){.dgrid{grid-template-columns:minmax(0,1fr)}.longrc{max-width:420px}.intro{grid-template-columns:1fr}}
 @media (max-width:640px){.search{display:none}.logo small{display:none}.intro h1{font-size:28px}.grid{columns:2 150px;column-gap:12px}.slip .pic{height:72px;font-size:36px}.rc{padding:16px 12px 22px;font-size:12px}.ln.tot span:last-child{font-size:19px}.claim b{font-size:32px}.drop{position:fixed;left:8px;right:8px;width:auto;top:100px}.stampmark{font-size:13px;right:8px}}
+@media (max-width:640px){.hd{gap:10px}.logo{white-space:nowrap;font-size:22px}.logo b{font-size:15px}.tools{gap:4px}.tools .btn{white-space:nowrap;padding:8px 11px}}
 </style>
 </head>
 <body>
 <nav class="mock"><a href="index.html">목업 목록</a><span>C안 가격 영수증</span><a href="#/">홈</a><a href="#/p/1">상세: 부풀림 의심</a><a href="#/p/2">상세: 진짜 할인</a><a href="#/login">로그인</a><a href="#/me">마이</a></nav>
 <header><div class="wrap hd">
-  <a class="logo" href="#/">세일체크<small>No.20261129-21</small></a>
+  <a class="logo" href="#/">택체크<small>No.20261129-21</small></a>
   <div class="search">상품명, 브랜드, 품번으로 찾기</div>
   <div class="tools"><button class="ib" id="bell" aria-label="알림 2개">🔔<span class="cnt">2</span></button><div class="drop" id="drop"></div>
     <a class="ib" href="#/me" aria-label="찜 목록" style="display:grid;place-items:center">♡</a><a class="btn ghost" href="#/login">로그인</a></div>
