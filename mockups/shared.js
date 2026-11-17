@@ -108,3 +108,37 @@
 
   window.SC = { products, GRADE, NOTIS, won, pct, chart, CAT: { all: '전체', shoes: '신발', top: '상의', bottom: '하의', outer: '아우터' } };
 })();
+
+/* 목업 화면 이동 메뉴: 모바일은 위쪽 줄 그대로, PC(641px 이상)는 헤더 왼쪽 목록 버튼(☰) 안으로 */
+(function () {
+  const bar = document.querySelector('.mock'); const hd = document.querySelector('header .hd');
+  if (!bar || !hd) return;
+  const css = document.createElement('style');
+  css.textContent = `
+  .mnav{position:relative;flex:none}
+  .mnav-btn{width:38px;height:38px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;display:grid;place-items:center;opacity:.8;cursor:pointer}
+  .mnav-btn:hover,.mnav-btn[aria-expanded="true"]{opacity:1}
+  .mnav-btn:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+  .mnav-menu{position:absolute;left:0;top:46px;min-width:220px;background:#fff;color:#22262d;border:1px solid #d5d9df;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.18);padding:6px;z-index:30;font-family:inherit}
+  .mnav-menu[hidden]{display:none}
+  .mnav-menu .t{font-size:11px;color:#6b7280;padding:6px 10px 4px}
+  .mnav-menu a{display:block;padding:8px 10px;border-radius:6px;font-size:13px;color:#22262d}
+  .mnav-menu a:hover,.mnav-menu a:focus-visible{background:#eef0f3;outline:none}
+  .mnav-menu a.cur{font-weight:700;background:#eef0f3}
+  @media (min-width:641px){.mock{display:none!important}}
+  @media (max-width:640px){.mnav{display:none}}`;
+  document.head.appendChild(css);
+  const label = (bar.querySelector('span') || {}).textContent || '목업';
+  const links = [...bar.querySelectorAll('a')];
+  const wrap = document.createElement('div'); wrap.className = 'mnav';
+  wrap.innerHTML = `<button class="mnav-btn" type="button" aria-label="목업 화면 목록" aria-expanded="false" aria-controls="mnav-menu"><svg width="16" height="14" viewBox="0 0 16 14" aria-hidden="true"><path d="M1 2h14M1 7h14M1 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <div class="mnav-menu" id="mnav-menu" hidden><div class="t">${label}</div>${links.map(a => `<a href="${a.getAttribute('href')}">${a.textContent}</a>`).join('')}</div>`;
+  hd.insertBefore(wrap, hd.firstChild);
+  const btn = wrap.querySelector('button'), menu = wrap.querySelector('.mnav-menu');
+  const set = (o) => { menu.hidden = !o; btn.setAttribute('aria-expanded', String(o)); };
+  const mark = () => menu.querySelectorAll('a').forEach(a => a.classList.toggle('cur', a.getAttribute('href') === (location.hash || '#/')));
+  btn.addEventListener('click', (e) => { e.stopPropagation(); mark(); set(menu.hidden); });
+  menu.addEventListener('click', () => set(false));
+  document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) set(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+})();
