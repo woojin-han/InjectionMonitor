@@ -32,7 +32,7 @@
     let grade;
     if (h.length < 7) grade = 'insufficient';
     else if (disp >= 0.3 && ratio < 0.1 && real < 0.05) grade = 'inflated';
-    else if (real >= 0.1 || (cur <= atl * 1.02 && cur < base)) grade = 'real';
+    else if (real >= 0.1 || (cur <= atl * 1.02 && real >= 0.03)) grade = 'real';
     else grade = 'normal';
     const prev = h.length > 1 ? h[h.length - 2] : cur;
     return {

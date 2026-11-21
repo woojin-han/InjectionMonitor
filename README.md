@@ -9,6 +9,16 @@
 - 이메일 로그인 · 찜 · 관심 상품(목표가 알림, 웹 안에서 표시)
 - OpenAI로 상품명 정규화(플랫폼 간 비교)와 "지금 사도 될까?" 요약
 
+## 데이터에 대해
+**이 프로젝트의 상품과 가격은 모두 시연용 가상 데이터입니다.** 공식 API나 크롤링으로 쓸 수 있는 데이터 소스를 찾지 못해, 가상의 브랜드와 쇼핑몰의 가격 기록을 만드는 시뮬레이터(`supabase/002_simulator.sql`)로 바꿨습니다. 할인 판정 로직, DB, 로그인, 찜, 알림은 실제 서비스와 같은 구조입니다. 자세한 내용은 `docs/01_기획서.md`와 `docs/04_시스템설계.md` 3절에 있습니다.
+
+## 데이터베이스 준비
+Supabase SQL Editor에서 차례로 실행합니다.
+1. `supabase/schema.sql` 전체
+2. `supabase/002_simulator.sql` 전체
+3. `select sim_seed();` (가상 상품 171개와 90일치 가격 기록 생성)
+4. 시연 중에는 `select sim_next_day();` (하루 지나기), 처음부터 다시 하려면 `select sim_seed(90, true);`
+
 ## 문서
 | 문서 | 내용 |
 |---|---|
@@ -35,14 +45,14 @@
 
 
 ## 기술 스택 (계획)
-Next.js + TypeScript + Tailwind · Supabase(PostgreSQL, Auth, Realtime) · Python 수집기 · GitHub Actions · Vercel · OpenAI API
+Next.js + TypeScript + Tailwind · Supabase(PostgreSQL, Auth, Realtime, SQL 시뮬레이터) · Vercel · OpenAI API
 
 ## 폴더
 ```
 docs/       기획·설계 문서
 mockups/    HTML 목업 3종 (v1/ 은 1차 목업)
-supabase/   schema.sql (DB 스키마, 함수, RLS)
-crawler/    (예정) Python 수집기
+supabase/   schema.sql (DB 스키마, 함수, RLS), 002_simulator.sql (데모 가격 시뮬레이터)
+scripts/    데이터 소스 확인 스크립트 (실제 수집이 가능한 곳을 찾을 때 사용)
 web/        (예정) Next.js 웹
 ```
 

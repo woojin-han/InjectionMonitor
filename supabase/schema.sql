@@ -13,6 +13,7 @@ create table if not exists public.profiles (
 -- ---------- 2. 모델 (플랫폼이 달라도 같은 상품을 묶는 단위) ----------
 create table if not exists public.models (
   id          bigint generated always as identity primary key,
+  is_demo     boolean not null default false,       -- 시뮬레이터가 만든 가상 데이터
   brand       text not null,
   model_name  text not null,
   style_code  text unique,                 -- 품번 예: DD1391-100
@@ -23,6 +24,7 @@ create table if not exists public.models (
 -- ---------- 3. 상품 (플랫폼별 판매 상품) ----------
 create table if not exists public.products (
   id             bigint generated always as identity primary key,
+  is_demo        boolean not null default false,    -- 시뮬레이터가 만든 가상 데이터
   platform       text not null,             -- musinsa | 29cm | shopify:<brand>
   external_id    text not null,             -- 쇼핑몰 상품번호
   model_id       bigint references public.models(id) on delete set null,
@@ -127,7 +129,8 @@ select p.id, p.platform, p.name, p.brand, p.category, p.list_price, p.current_pr
        s.all_time_low, s.all_time_low_date, s.base_price,
        s.display_discount, s.real_discount, s.list_price_day_ratio,
        s.days_collected, s.first_collected_date, s.trust_grade, s.ai_summary,
-       (p.current_price <= s.all_time_low) as is_all_time_low
+       (p.current_price <= s.all_time_low) as is_all_time_low,
+       p.is_demo
 from public.products p
 join public.product_stats s on s.product_id = p.id;
 
@@ -136,7 +139,10 @@ join public.product_stats s on s.product_id = p.id;
 -- =====================================================================
 create or replace function public.refresh_product_stats()
 returns void language sql security definer set search_path = public as $$
-  with agg as (
+  with last_d as (
+    select product_id, max(collected_date) as ld from price_history group by product_id
+  ),
+  agg as (
     select h.product_id,
            min(h.sale_price)                                             as atl,
            count(*)                                                      as days,
@@ -144,9 +150,10 @@ returns void language sql security definer set search_path = public as $$
            (count(*) filter (where h.sale_price >= h.list_price * 0.98))::numeric
              / count(*)                                                  as lp_ratio,
            percentile_cont(0.5) within group (order by h.sale_price)
-             filter (where h.collected_date >= current_date - 30)        as base
+             filter (where h.collected_date > l.ld - 30)                 as base
     from price_history h
-    group by h.product_id
+    join last_d l on l.product_id = h.product_id
+    group by h.product_id, l.ld
   ),
   atl_date as (
     select distinct on (h.product_id) h.product_id, h.collected_date
@@ -173,7 +180,7 @@ returns void language sql security definer set search_path = public as $$
          case
            when c.days < 7 then 'insufficient'
            when c.disp >= 0.30 and c.lp_ratio < 0.10 and c.real < 0.05 then 'inflated'
-           when c.real >= 0.10 or (c.current_price <= c.atl * 1.02 and c.current_price < c.base) then 'real'
+           when c.real >= 0.10 or (c.current_price <= c.atl * 1.02 and c.real >= 0.03) then 'real'
            else 'normal'
          end,
          now()
